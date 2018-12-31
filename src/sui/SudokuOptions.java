@@ -8,34 +8,28 @@
  */
 package sui;
 
-
 /**
- * This class is intended to house some user-specified options, and is here really
- * only as a placeholder, in case I come back around to adding to the existing 
- * application.
+ * This class is intended to house some user-specified options, and is here
+ * really only as a placeholder, in case I come back around to adding to the
+ * existing application.
  * <br><br>
  * NOTE: While this is not currently deprecated, it's not in use.
  */
-public class SudokuOptions
-{
+public class SudokuOptions {
 
-    public enum Difficulty
-    {
-        EASY (20),
-        NORMAL (16),
-        HARD (12);
+    public enum Difficulty {
+        EASY(20),
+        NORMAL(16),
+        HARD(12);
 
         private final int diffCode;
 
-        private Difficulty(int diffCode)
-        {
+        private Difficulty(int diffCode) {
             this.diffCode = diffCode;
 
         }
-        
 
-        public int getDiffCode()
-        {
+        public int getDiffCode() {
             return this.diffCode;
 
         }
@@ -43,30 +37,27 @@ public class SudokuOptions
     }
     private Difficulty level;
     private int seed;
-    
-    public SudokuOptions()
-    {
+
+    public SudokuOptions() {
         level = Difficulty.NORMAL;
         this.seed = 16;
-        
+
     }
-    
-    
-    public SudokuOptions(int seed)
-    {
-        
-        
+
+    public SudokuOptions(int seed) {
+
     }
-    
-    
-    public SudokuOptions(int seed, int level)
-    {
-        
+
+    public SudokuOptions(int seed, int level) {
+
     }
-    
-    public Difficulty getDifficulty() { return this.level; }
-    public int getSeed() { return this.seed; }
-    
+
+    public Difficulty getDifficulty() {
+        return this.level;
+    }
+
+    public int getSeed() {
+        return this.seed;
+    }
+
 }
-
-
