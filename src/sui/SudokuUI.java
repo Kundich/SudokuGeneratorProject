@@ -138,94 +138,17 @@ public class SudokuUI extends Application {
                 textFieldObj.setFont(Font.font(STYLESHEET_MODENA, FontWeight.NORMAL, 16));
                 textFieldObj.setEditable(true);
 
-                // Aaaarrrrgggghhhh!!!!  Effectively finalizing variables for
+                // Effectively finalizing variables for
                 // the listener.
                 int row = i;
                 int col = j;
                 int index = row * 9 + col;
 
-                // Set the listener: when we change text, call this.
-                textFieldObj.textProperty().addListener((ov, oldV, newV) -> {
-                    // Try to prevent the double-firing with
-                    // an if-statement, which prevents double-
-                    // firing when the old value and the new
-                    // are the same.
-                    if (!oldV.equals(newV)) {
-                        // Call the listener's choice of method.
-                        leaveFocus(index, sudokuGame.getDisplay(), row, col);
-
-                    }
-
-                });
-
-                // Currently no plans for the leave-focus event.
-                textFieldObj.focusedProperty().addListener((fov) -> {
-                });
-
-                // Finally, set the grid border so people can see which elements
-                // constitute to block-rule.  This and the next if-block both
-                // use the custom method in SudokuTextField class.
-                if (!(col % 3 == 0) && row % 3 == 0) {
-                    // Paint the top border if our row is a multiple of three.
-                    //tf.setStyle("-fx-border-style: solid outside; -fx-border-width: 8 0 0 0;");
-                    textFieldObj.setBorderThickness(8, 0, 0, 0, 8);
-                } else if (!(row % 3 == 0) && col % 3 == 0) {
-                    // Paint the left border, if our column is multiple of three.
-                    textFieldObj.setBorderThickness(0, 0, 0, 8, 8);
-
-                } else if (col % 3 == 0 && row % 3 == 0) {
-                    textFieldObj.setBorderThickness(8, 0, 0, 8, 8);
-
-                }
-
-                // Any exterior borders not already painted by setting the 
-                // border widths as stored in SudokuTextField object.
-                if (row == SudokuGenerator.MAX_VALUE - 1 && col == SudokuGenerator.MAX_VALUE - 1) {
-                    textFieldObj.setBorderThickness(0, 8, 8, 0, 8);
-
-                } else if (col == SudokuGenerator.MAX_VALUE - 1 && !(row % 3 == 0)) {
-                    textFieldObj.setBorderThickness(0, 8, 0, 0, 8);
-
-                } else if (row == SudokuGenerator.MAX_VALUE - 1 && !(col % 3 == 0)) {
-                    textFieldObj.setBorderThickness(0, 0, 8, 0, 8);
-
-                } else if (row == SudokuGenerator.MAX_VALUE - 1 && col % 3 == 0) {
-                    textFieldObj.setBorderThickness(0, 0, 8, 8, 8);
-
-                } else if (col == SudokuGenerator.MAX_VALUE - 1 && row % 3 == 0) {
-                    textFieldObj.setBorderThickness(8, 8, 0, 0, 8);
-
-                }
-
+                setTextBoxEventHandlers(textFieldObj, index, row, col);
+                SetBorderLocations(textFieldObj, row, col);
+                
                 // Set the format to what we've already done.
                 textFieldObj.setStyle(textFieldObj.getBorderFormat());
-
-                // Make the app respond to arrow keys for control traversal
-                // inside the puzzlePane only.
-                textFieldObj.setOnKeyPressed((e)
-                        -> {
-                    // Handle movement based on the key that's pressed.
-                    switch (e.getCode()) {
-                        case UP: {
-                            keyUp(index);
-                            break;
-                        }
-                        case DOWN: {
-                            keyDown(index);
-                            break;
-                        }
-                        case LEFT: {
-                            keyLeft(index);
-                            break;
-                        }
-                        case RIGHT: {
-                            keyRight(index);
-                            break;
-                        }
-
-                    }
-
-                });
 
                 // Lastly, add the textField to its pane.
                 puzzlePane.add(textFieldObj, j, i);
@@ -377,6 +300,117 @@ public class SudokuUI extends Application {
         }
     }
 
+    
+    /**
+     * This method sets the event handlers for the SudokuTextField.  One assigns 
+     * the feedback when an input value that clearly violates one of the Sudoku
+     * rules, e.g. values must be unique in any given row, column, or 3x3 grid.  
+     * Another allows for arrow-key navigation of the Sudoku board.  A third 
+     * @param textFieldObj The SudokuTextField that will respond to the events.
+     * @param index The index of the SudokuTextField within the parent pane.
+     * @param row The effective row location, when considering all 
+     * SudokuTextFields as a 2D array.
+     * @param col The effective column location, when considering all 
+     * SudokuTextFields as a 2D array.
+     */
+    private void setTextBoxEventHandlers(SudokuTextField textFieldObj, int index, int row, int col) {
+
+        // Set the listener: when we change text, call this.
+        textFieldObj.textProperty().addListener((observable, oldValue, newValue) -> {
+            // Try to prevent the double-firing with
+            // an if-statement, which prevents double-
+            // firing when the old value and the new
+            // are the same.
+            if (!oldValue.equals(newValue)) {
+                // Call the listener's choice of method.
+                leaveFocus(index, sudokuGame.getDisplay(), row, col);
+
+            }
+
+        });
+
+        // Currently no plans for the leave-focus event.
+        //textFieldObj.focusedProperty().addListener((fov) -> {
+        //});
+
+        // Make the app respond to arrow keys for control traversal
+        // inside the puzzlePane only.
+        textFieldObj.setOnKeyPressed((e)
+                -> {
+            // Handle movement based on the key that's pressed.
+            switch (e.getCode()) {
+                case UP: {
+                    keyUp(index);
+                    break;
+                }
+                case DOWN: {
+                    keyDown(index);
+                    break;
+                }
+                case LEFT: {
+                    keyLeft(index);
+                    break;
+                }
+                case RIGHT: {
+                    keyRight(index);
+                    break;
+                }
+
+            }
+        });
+        
+    }
+    
+    /**
+     * This method calculates which faces of the textFieldObj should be 
+     * painted with a thicker border line and applies this extra formatting to
+     * the textFieldObj.
+     * @param textFieldObj The SudokuTextField whose borders require painting.
+     * @param row The effective row-location of the textFieldObj on the Sudoku 
+     * board, where the entire board is a 2D-array.
+     * @param col The effective column-location of the textFieldObj on the  
+     * Sudoku board, where the entire board is a 2D-array.
+     */
+    private void SetBorderLocations(SudokuTextField textFieldObj, int row, int col)
+    {
+        // Set the grid border so people can see which elements
+        // constitute to block-rule.  This and the next if-block both
+        // use the custom method in SudokuTextField class.
+        if (!(col % 3 == 0) && row % 3 == 0) {
+            // Paint the top border if our row is a multiple of three.
+            //tf.setStyle("-fx-border-style: solid outside; -fx-border-width: 8 0 0 0;");
+            textFieldObj.setBorderThickness(8, 0, 0, 0, 8);
+        } else if (!(row % 3 == 0) && col % 3 == 0) {
+            // Paint the left border, if our column is multiple of three.
+            textFieldObj.setBorderThickness(0, 0, 0, 8, 8);
+
+        } else if (col % 3 == 0 && row % 3 == 0) {
+            textFieldObj.setBorderThickness(8, 0, 0, 8, 8);
+
+        }
+
+        // Any exterior borders not already painted by setting the 
+        // border widths as stored in SudokuTextField object.
+        if (row == SudokuGenerator.MAX_VALUE - 1 && col == SudokuGenerator.MAX_VALUE - 1) {
+            textFieldObj.setBorderThickness(0, 8, 8, 0, 8);
+
+        } else if (col == SudokuGenerator.MAX_VALUE - 1 && !(row % 3 == 0)) {
+            textFieldObj.setBorderThickness(0, 8, 0, 0, 8);
+
+        } else if (row == SudokuGenerator.MAX_VALUE - 1 && !(col % 3 == 0)) {
+            textFieldObj.setBorderThickness(0, 0, 8, 0, 8);
+
+        } else if (row == SudokuGenerator.MAX_VALUE - 1 && col % 3 == 0) {
+            textFieldObj.setBorderThickness(0, 0, 8, 8, 8);
+
+        } else if (col == SudokuGenerator.MAX_VALUE - 1 && row % 3 == 0) {
+            textFieldObj.setBorderThickness(8, 8, 0, 0, 8);
+
+        }
+
+    }
+    
+    
     /**
      * The purpose of this method is to check when a player leaves one of the
      * text boxes that the placed digit, if any, does not violate any rule of
@@ -497,15 +531,16 @@ public class SudokuUI extends Application {
 
     /**
      * Button event where the user effectively gives up on solving the puzzle.
-     * The user is chastised for a quitter's mentality. The elapsed timer is
-     * also shut off.
+     * The user is chastised for a quitter's mentality. Much like Poker, you 
+     * you lose the right to see the solution.  The elapsed timer is also shut 
+     * off.
      */
     public void onSurrenderClickEvent() {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Sudoku Message");
         alert.setHeaderText("You are about to throw in the towel.");
         alert.setContentText("We will not normally show you the solution, "
-                + "because you don't deserve to see it.  Are you sure you want "
+                + "  Are you sure you want "
                 + "to surrender?");
 
         ButtonType yesButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
@@ -594,9 +629,7 @@ public class SudokuUI extends Application {
             // Move 9 indices up to the square immediately above...
             ((SudokuTextField) puzzlePane.getChildren().get(index - 9)).requestFocus();
 
-        } else {
-            System.out.println("DEBUG MESSAGE");
-        }
+        } 
 
     }
 
@@ -615,10 +648,8 @@ public class SudokuUI extends Application {
             // Move 9 indices down to the square immediately below...
             ((SudokuTextField) puzzlePane.getChildren().get(index + 9)).requestFocus();
 
-        } else {
-            System.out.println("DEBUG MESSAGE");
-        }
-
+        } 
+        
     }
 
     /**
@@ -636,10 +667,8 @@ public class SudokuUI extends Application {
             // Move 1 index to the square immediately left...
             ((SudokuTextField) puzzlePane.getChildren().get(index - 1)).requestFocus();
 
-        } else {
-            System.out.println("DEBUG MESSAGE");
-        }
-
+        } 
+        
     }
 
     /**
@@ -657,10 +686,8 @@ public class SudokuUI extends Application {
             // Move 1 index to the square immediately right...
             ((SudokuTextField) puzzlePane.getChildren().get(index + 1)).requestFocus();
 
-        } else {
-            System.out.println("DEBUG MESSAGE");
-        }
-
+        } 
+        
     }
 
 }

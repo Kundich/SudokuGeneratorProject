@@ -37,7 +37,7 @@ public class SudokuAnimationLabel extends Label {
 
         // Sets Oprah Bus time, default when not invoked via parametered
         // CTOR will be 10 minutes for testing.
-        warningTime = 10000;
+        warningTime = 10 * 60 * 1000;
 
         // Creates the LabelTimer object with references to everything done
         // so far.

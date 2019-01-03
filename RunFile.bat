@@ -1,1 +1,1 @@
-java -jar "SudokuGame.jar" "20" 
+java -jar "SudokuGame.jar" "32" 

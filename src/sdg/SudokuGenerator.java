@@ -144,14 +144,14 @@ public class SudokuGenerator {
             generatePuzzlePureRandom(seed);
 
             // Console debug print: TAKE OUT LATER.
-            printArray(puzzleSolution, "INITIAL SEEDING");
+            //printArray(puzzleSolution, "INITIAL SEEDING");
 
             // Using the seeded array, we'll generate the solution via brute-
             // force backward generation.
             createSolution(getSolution(), baseTime, game);
 
             // Console debug print: TAKE OUT LATER.
-            printArray(puzzleSolution, "PUZZLE SOLUTION");
+            //printArray(puzzleSolution, "PUZZLE SOLUTION");
         } // Do-While check makes sure we haven't hit a seeding that does not allow for 
         // a proper solution. 
         while (!checkIfValidPuzzle());
@@ -162,7 +162,7 @@ public class SudokuGenerator {
         createUserViewPuzzle(hints + 1);
 
         // Console debug print: TAKE OUT LATER.
-        printArray(puzzleDisplay, "USER VIEW");
+        //printArray(puzzleDisplay, "USER VIEW");
 
     }
 
@@ -733,7 +733,7 @@ public class SudokuGenerator {
 
                 }
 
-                printArray(puzzleSolution, "TESTING FILE I/O " + count);
+                //printArray(puzzleSolution, "TESTING FILE I/O " + count);
                 write.close();
 
             }
